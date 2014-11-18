@@ -108,4 +108,21 @@ describe("route", function() {
     .expect(404)
     .end(done);
   });
+
+  it(".:format requires the extention in the request url", function(done) {
+    var app = koa();
+    var handler = route("/posts/:post_id/comments/:id.:format", function *(next) {
+      this.status = 200;
+      this.body = "This is the "+this.params.format+" version of post #"+
+        this.params.post_id+"'s comment #"+this.params.id;
+    });
+
+    app.use(handler);
+
+    request(app.listen())
+    .get("/posts/123/comments/456.html")
+    .expect(200)
+    .expect("This is the html version of post #123's comment #456")
+    .end(done);
+  });
 });

@@ -1,6 +1,8 @@
 /* jshint node: true, esnext: true */
 "use strict";
 
+var assert = require("assert");
+
 /**
  * expose
  */
@@ -76,7 +78,6 @@ function pathsMatch(pathPattern) {
     var reg = /\/?[a-z0-9_:]+/gi;
     var p = pathPattern.match(reg);
     var s = pathStr.match(reg);
-
     if (!s || s.length < p.length) {
       return false;
     }
@@ -94,10 +95,14 @@ function pathsMatch(pathPattern) {
       }
     }
 
-    var r = new RegExp(p.join(""), "gi");
-    if (r.test(pathStr)) {
+    try {
+      assert.deepEqual(p, s);
       this.params = params;
       return true;
+    } catch(e) {
+      if (!e instanceof assert.AssertionError) {
+        throw e;
+      }
     }
 
     return false;
