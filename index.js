@@ -63,15 +63,43 @@ function route(method, pathStr, fn) {
 /**
  * pathsMatch asserts the request path
  *
- * @param {String} pathStr
+ * @param {String} pathPattern
  * @return {Bool}
  * @api private
  */
 
-function pathsMatch(pathStr) {
+function pathsMatch(pathPattern) {
   /* jshint validthis: true */
-  var url = this.request.url.split("?")[0];
-  return pathStr === url;
+  var pathStr = this.request.url.split("?")[0];
+
+  if (/:[a-z0-9_]+/gi.test(pathPattern)) {
+    var reg = /\/?[a-z0-9_:]+/gi;
+    var p = pathPattern.match(reg);
+    var s = pathStr.match(reg);
+
+    var params = {};
+    var i = 0;
+    var len = p.length;
+    for(; i < len; i++) {
+      var n = p[i];
+      var m = s[i];
+      if (/^\/?:/.test(n)) {
+        p[i] = m;
+        var prop = n.replace(/\/?:/, "");
+        params[prop] = m.replace(/\/?/, "");
+      }
+    }
+
+    var r = new RegExp(p.join(""), "gi");
+    if (r.test(pathStr)) {
+      this.params = params;
+      return true;
+    }
+
+    return false;
+  }
+
+  return pathPattern === pathStr;
 }
 
 /**
