@@ -1,10 +1,25 @@
 /* jshint node: true, esnext: true */
+"use strict";
 
 /**
  * expose
  */
 
 module.exports = route;
+
+/**
+ * methods
+ */
+
+let methods = [
+  'GET',
+  'POST',
+  'PUT',
+  'HEAD',
+  'DELETE',
+  'OPTIONS',
+  'TRACE'
+];
 
 /**
  * route routes a handler fn to a method and path
@@ -27,6 +42,14 @@ function route(method, pathStr, fn) {
     throw new Error("handler function must be a GeneratorFunction");
   }
 
+  if (method) {
+    method = method.toUpperCase();
+
+    if (!~methods.indexOf(method)) {
+      throw new Error(method + " method is not supported");
+    }
+  }
+
   return function *(next) {
     if (isMethod.call(this, method) && pathsMatch.call(this, pathStr)) {
       return yield fn;
@@ -45,6 +68,7 @@ function route(method, pathStr, fn) {
  */
 
 function pathsMatch(pathStr) {
+  /* jshint validthis: true */
   var url = this.request.url.split("?")[0];
   return pathStr === url;
 }
@@ -62,7 +86,8 @@ function isMethod(method) {
     return true;
   }
 
-  return method.toUpperCase() === this.request.method.toUpperCase();
+  /* jshint validthis: true */
+  return method === this.request.method.toUpperCase();
 }
 
 

@@ -50,6 +50,14 @@ describe("route", function() {
     }, "handler function must be a GeneratorFunction");
   });
 
+  it("method must be a valid method", function() {
+    assert.throws(function() {
+      route("FOO", "/foo/bar", function *(next) {
+        //
+      });
+    }, "FOO method is not supported")
+  });
+
   it("path comparison does not include query string", function(done) {
     var app = koa();
     var handler = route("/foo/bar", function *(next) {
