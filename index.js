@@ -12,13 +12,14 @@ module.exports = route;
  */
 
 let methods = [
-  'GET',
-  'POST',
-  'PUT',
-  'HEAD',
-  'DELETE',
-  'OPTIONS',
-  'TRACE'
+  "GET",
+  "POST",
+  "PUT",
+  "HEAD",
+  "DELETE",
+  "OPTIONS",
+  "TRACE",
+  "PATCH"
 ];
 
 /**
