@@ -72,13 +72,11 @@ function route(method, pathStr, fn) {
 
 function pathsMatch(pathPattern) {
   /* jshint validthis: true */
-  var pathStr = this.request.url.split("?")[0];
-
   if (/:[a-z0-9_]+/gi.test(pathPattern)) {
     var reg = /\/?[a-z0-9_:]+/gi;
 
     var p = pathPattern.match(reg);
-    var s = pathStr.match(reg);
+    var s = this.path.match(reg);
     if (!s || s.length < p.length) {
       return false;
     }
@@ -98,7 +96,7 @@ function pathsMatch(pathPattern) {
     return false;
   }
 
-  return pathPattern === pathStr;
+  return pathPattern === this.path;
 }
 
 /**
