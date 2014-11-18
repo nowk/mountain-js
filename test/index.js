@@ -55,7 +55,7 @@ describe("route", function() {
       route("FOO", "/foo/bar", function *(next) {
         //
       });
-    }, "FOO method is not supported")
+    }, "FOO method is not supported");
   });
 
   it("path comparison does not include query string", function(done) {
@@ -92,5 +92,5 @@ describe("route", function() {
     .expect(200)
     .expect("This is post #123's comment #456")
     .end(done);
-  })
+  });
 });
