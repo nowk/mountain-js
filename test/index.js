@@ -93,4 +93,19 @@ describe("route", function() {
     .expect("This is post #123's comment #456")
     .end(done);
   });
+
+  it("request paths that don't meet path pattern splits, gracefully 404", function(done) {
+    var app = koa();
+    var handler = route("/posts/:post_id/comments/:id/", function *(next) {
+      this.status = 200;
+      this.body = "This is post #"+this.params.post_id+"'s comment #"+this.params.id;
+    });
+
+    app.use(handler);
+
+    request(app.listen())
+    .get("/posts")
+    .expect(404)
+    .end(done);
+  });
 });

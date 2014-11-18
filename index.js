@@ -77,6 +77,10 @@ function pathsMatch(pathPattern) {
     var p = pathPattern.match(reg);
     var s = pathStr.match(reg);
 
+    if (!s || s.length < p.length) {
+      return false;
+    }
+
     var params = {};
     var i = 0;
     var len = p.length;
