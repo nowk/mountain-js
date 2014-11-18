@@ -4,12 +4,12 @@ var assert = require("chai").assert;
 var request = require("supertest");
 
 var koa = require("koa");
-var mount = require("..");
+var route = require("..");
 
-describe("mount", function() {
-  it("no method mounts, respond to any method", function(done) {
+describe("route", function() {
+  it("no method routes, respond to any method", function(done) {
     var app = koa();
-    var handler = mount("/foo/bar", function *(next) {
+    var handler = route("/foo/bar", function *(next) {
       this.status = 200;
     });
 
@@ -21,13 +21,13 @@ describe("mount", function() {
     .end(done);
   });
 
-  it("mounts on method", function(done) {
+  it("routes on method", function(done) {
     var app = koa();
-    var handlera  = mount("GET", "/foo/bar", function *(next) {
+    var handlera  = route("GET", "/foo/bar", function *(next) {
       this.status = 404;
     });
 
-    var handlerb  = mount("POST", "/foo/bar", function *(next) {
+    var handlerb  = route("POST", "/foo/bar", function *(next) {
       this.status = 200;
       this.body = "Hello World!";
     });
@@ -44,7 +44,7 @@ describe("mount", function() {
 
   it("handler must be a generator function", function() {
     assert.throws(function() {
-      mount("/foo/bar", function(next) {
+      route("/foo/bar", function(next) {
         //
       });
     }, "handler function must be a GeneratorFunction");
@@ -52,7 +52,7 @@ describe("mount", function() {
 
   it("path comparison does not include query string", function(done) {
     var app = koa();
-    var handler = mount("/foo/bar", function *(next) {
+    var handler = route("/foo/bar", function *(next) {
       this.status = 200;
       this.body = "hello world!";
     });

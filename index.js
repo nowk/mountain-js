@@ -4,10 +4,10 @@
  * expose
  */
 
-module.exports = mount;
+module.exports = route;
 
 /**
- * mount mounts a handler fn to a method and path
+ * route routes a handler fn to a method and path
  *
  * @param {String} method (optional, defaults to GET)
  * @param {String} pathStr
@@ -16,7 +16,7 @@ module.exports = mount;
  * @api public
  */
 
-function mount(method, pathStr, fn) {
+function route(method, pathStr, fn) {
   if ("undefined" === typeof fn) {
     fn = pathStr;
     pathStr = method;
