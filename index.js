@@ -76,24 +76,14 @@ function pathsMatch(pathPattern) {
 
   if (/:[a-z0-9_]+/gi.test(pathPattern)) {
     var reg = /\/?[a-z0-9_:]+/gi;
+
     var p = pathPattern.match(reg);
     var s = pathStr.match(reg);
     if (!s || s.length < p.length) {
       return false;
     }
 
-    var params = {};
-    var i = 0;
-    var len = p.length;
-    for(; i < len; i++) {
-      var n = p[i];
-      var m = s[i];
-      if (/^\/?:/.test(n)) {
-        p[i] = m;
-        var prop = n.replace(/\/?:/, "");
-        params[prop] = m.replace(/\/?/, "");
-      }
-    }
+    var params = parameterize.call(p, s);
 
     try {
       assert.deepEqual(p, s);
@@ -109,6 +99,33 @@ function pathsMatch(pathPattern) {
   }
 
   return pathPattern === pathStr;
+}
+
+/**
+ * parameterize maps and replaces associated param values to keys
+ *
+ * @param {Object} s (original url split)
+ * @return {Object} (key:value of parsed param keys to value)
+ * @api private
+ */
+
+function parameterize(s) {
+  /* jshint validthis: true */
+  var self = this;
+  var params = {};
+  var i = 0;
+  var len = this.length;
+  for(; i < len; i++) {
+    var n = self[i];
+    var m = s[i];
+    if (/^\/?:/.test(n)) {
+      self[i] = m;
+      var prop = n.replace(/\/?:/, "");
+      params[prop] = m.replace(/\/?/, "");
+    }
+  }
+
+  return params;
 }
 
 /**
