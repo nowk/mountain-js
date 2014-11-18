@@ -28,7 +28,7 @@ function mount(method, pathStr, fn) {
   }
 
   return function *(next) {
-    if (isMethod.call(this, method) && isPath.call(this, pathStr)) {
+    if (isMethod.call(this, method) && pathsMatch.call(this, pathStr)) {
       return yield fn;
     }
 
@@ -37,14 +37,14 @@ function mount(method, pathStr, fn) {
 }
 
 /**
- * isPath asserts the request path
+ * pathsMatch asserts the request path
  *
  * @param {String} pathStr
  * @return {Bool}
  * @api private
  */
 
-function isPath(pathStr) {
+function pathsMatch(pathStr) {
   var url = this.request.url.split("?")[0];
   return pathStr === url;
 }
