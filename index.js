@@ -73,7 +73,7 @@ function route(method, pathStr, fn) {
 function pathsMatch(pathPattern) {
   /* jshint validthis: true */
   if (/:[a-z0-9_]+/gi.test(pathPattern)) {
-    var reg = /\/?[a-z0-9_:]+/gi;
+    var reg = /\/?[a-z0-9-_:]+/gi;
 
     var p = pathPattern.match(reg);
     var s = this.path.match(reg);
