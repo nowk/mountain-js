@@ -1,4 +1,4 @@
-/* jshint node: true, esnext: true */
+/* jshint node: true, esnext: true, noyield: true */
 
 var assert = require("chai").assert;
 var request = require("supertest");
