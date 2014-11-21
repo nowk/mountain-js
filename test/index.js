@@ -1,16 +1,17 @@
 /* jshint node: true, esnext: true, noyield: true */
+"use strict";
 
-var assert = require("chai").assert;
-var request = require("supertest");
-var koaBody = require("koa-better-body");
+const assert = require("chai").assert;
+const request = require("supertest");
+const koaBody = require("koa-better-body");
 
-var koa = require("koa");
-var route = require("..");
+const koa = require("koa");
+const route = require("..");
 
 describe("route", function() {
   it("no method routes, respond to any method", function(done) {
-    var app = koa();
-    var handler = route("/foo/bar", function *(next) {
+    let app = koa();
+    let handler = route("/foo/bar", function *(next) {
       this.status = 200;
     });
 
@@ -23,12 +24,12 @@ describe("route", function() {
   });
 
   it("routes on method", function(done) {
-    var app = koa();
-    var handlera  = route("GET", "/foo/bar", function *(next) {
+    let app = koa();
+    let handlera  = route("GET", "/foo/bar", function *(next) {
       this.status = 404;
     });
 
-    var handlerb  = route("POST", "/foo/bar", function *(next) {
+    let handlerb  = route("POST", "/foo/bar", function *(next) {
       this.status = 200;
       this.body = "Hello World!";
     });
@@ -60,8 +61,8 @@ describe("route", function() {
   });
 
   it("path comparison does not include query string", function(done) {
-    var app = koa();
-    var handler = route("/foo/bar", function *(next) {
+    let app = koa();
+    let handler = route("/foo/bar", function *(next) {
       this.status = 200;
       this.body = "hello world!";
     });
@@ -80,8 +81,8 @@ describe("route", function() {
   });
 
   it("supports parameterized paths", function(done) {
-    var app = koa();
-    var handler = route("/posts/:post_id/comments/:id/", function *(next) {
+    let app = koa();
+    let handler = route("/posts/:post_id/comments/:id/", function *(next) {
       this.status = 200;
       this.body = "This is post #"+this.params.post_id+"'s comment #"+this.params.id;
     });
@@ -96,8 +97,8 @@ describe("route", function() {
   });
 
   it("request paths that don't meet path pattern splits, gracefully 404", function(done) {
-    var app = koa();
-    var handler = route("/posts/:post_id/comments/:id/", function *(next) {
+    let app = koa();
+    let handler = route("/posts/:post_id/comments/:id/", function *(next) {
       this.status = 200;
       this.body = "This is post #"+this.params.post_id+"'s comment #"+this.params.id;
     });
@@ -111,8 +112,8 @@ describe("route", function() {
   });
 
   it(".:format requires the extention in the request url", function(done) {
-    var app = koa();
-    var handler = route("/posts/:post_id/comments/:id.:format", function *(next) {
+    let app = koa();
+    let handler = route("/posts/:post_id/comments/:id.:format", function *(next) {
       this.status = 200;
       this.body = "This is the "+this.params.format+" version of post #"+
         this.params.post_id+"'s comment #"+this.params.id;
@@ -128,17 +129,17 @@ describe("route", function() {
   });
 
   it("can accept multiple middlewares to executed in argument order", function(done) {
-    var app = koa();
-    var a = function *(next) {
+    let app = koa();
+    let a = function *(next) {
       this.body = "Hello ";
       yield* next;
     };
-    var b = function *(next) {
+    let b = function *(next) {
       this.body+= "World";
       yield* next;
     };
 
-    var handler = route("/multi/yields", a, b, function *(next) {
+    let handler = route("/multi/yields", a, b, function *(next) {
       this.status = 200;
       this.body+= "!";
     });
@@ -155,13 +156,13 @@ describe("route", function() {
   it("the last function in the route stack is given the next of the app stack", 
     function(done) {
 
-    var app = koa();
-    var a = function *(next) {
+    let app = koa();
+    let a = function *(next) {
       this.body = "Not ";
       yield* next;
     };
 
-    var handler = route("/multi/yields", a, function *(next) {
+    let handler = route("/multi/yields", a, function *(next) {
       this.body+= "Found";
       yield next;
     });
@@ -180,12 +181,12 @@ describe("route", function() {
   });
 
   it("works with other middlewares", function(done) {
-    var app = koa();
-    var a = function *(next) {
+    let app = koa();
+    let a = function *(next) {
       yield* next;
     };
 
-    var handler = route("POST", "/posts", a, koaBody(), function *(next) {
+    let handler = route("POST", "/posts", a, koaBody(), function *(next) {
       this.body = this.request.body;
     });
 

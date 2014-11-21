@@ -1,7 +1,7 @@
 /* jshint node: true, esnext: true */
 "use strict";
 
-var assert = require("assert");
+const assert = require("assert");
 
 /**
  * expose
@@ -35,14 +35,14 @@ let methods = [
  */
 
 function route(method, pathStr) {
-  var offset = 2;
+  let offset = 2;
   if ("string" !== typeof pathStr) {
     offset = 1;
     pathStr = method;
     method = null;
   }
 
-  var fns = Array.prototype.slice.call(arguments, offset);
+  let fns = Array.prototype.slice.call(arguments, offset);
 
   // if (!isGenerator(fn)) {
   //   throw new Error("handler function must be a GeneratorFunction");
@@ -77,18 +77,18 @@ function route(method, pathStr) {
 
 function iteration(fns, done) {
   // jshint validthis: true
-  var self = this;
-  var n = 0;
-  var it = {
+  let self = this;
+  let n = 0;
+  let it = {
     next: function() {
       if (fns.length === n) {
         return {done: true};
       }
 
-      var fn = fns[n];
+      let fn = fns[n];
       n++;
 
-      var next = it;
+      let next = it;
       if (fns.length === n) {
         next = done;
       }
@@ -110,15 +110,15 @@ function iteration(fns, done) {
 function pathsMatch(pathPattern) {
   /* jshint validthis: true */
   if (/:[a-z0-9_]+/gi.test(pathPattern)) {
-    var reg = /\/?[a-z0-9-_:]+/gi;
+    let reg = /\/?[a-z0-9-_:]+/gi;
 
-    var p = pathPattern.match(reg);
-    var s = this.path.match(reg);
+    let p = pathPattern.match(reg);
+    let s = this.path.match(reg);
     if (!s || s.length < p.length) {
       return false;
     }
 
-    var params = parameterize.call(p, s);
+    let params = parameterize.call(p, s);
 
     try {
       assert.deepEqual(p, s);
@@ -146,16 +146,16 @@ function pathsMatch(pathPattern) {
 
 function parameterize(s) {
   /* jshint validthis: true */
-  var self = this;
-  var params = {};
-  var i = 0;
-  var len = this.length;
+  let self = this;
+  let params = {};
+  let i = 0;
+  let len = this.length;
   for(; i < len; i++) {
-    var n = self[i];
-    var m = s[i];
+    let n = self[i];
+    let m = s[i];
     if (/^\/?:/.test(n)) {
       self[i] = m;
-      var prop = n.replace(/\/?:/, "");
+      let prop = n.replace(/\/?:/, "");
       params[prop] = m.replace(/\/?/, "");
     }
   }
