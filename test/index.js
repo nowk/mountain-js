@@ -2,6 +2,7 @@
 
 var assert = require("chai").assert;
 var request = require("supertest");
+var koaBody = require("koa-better-body");
 
 var koa = require("koa");
 var route = require("..");
@@ -42,7 +43,7 @@ describe("route", function() {
     .end(done);
   });
 
-  it("handler must be a generator function", function() {
+  it.skip("handler must be a generator function", function() {
     assert.throws(function() {
       route("/foo/bar", function(next) {
         //
@@ -123,6 +124,78 @@ describe("route", function() {
     .get("/posts/123/comments/456.html")
     .expect(200)
     .expect("This is the html version of post #123's comment #456")
+    .end(done);
+  });
+
+  it("can accept multiple middlewares to executed in argument order", function(done) {
+    var app = koa();
+    var a = function *(next) {
+      this.body = "Hello ";
+      yield* next;
+    };
+    var b = function *(next) {
+      this.body+= "World";
+      yield* next;
+    };
+
+    var handler = route("/multi/yields", a, b, function *(next) {
+      this.status = 200;
+      this.body+= "!";
+    });
+
+    app.use(handler);
+
+    request(app.listen())
+    .get("/multi/yields")
+    .expect(200)
+    .expect("Hello World!")
+    .end(done);
+  });
+
+  it("the last function in the route stack is given the next of the app stack", 
+    function(done) {
+
+    var app = koa();
+    var a = function *(next) {
+      this.body = "Not ";
+      yield* next;
+    };
+
+    var handler = route("/multi/yields", a, function *(next) {
+      this.body+= "Found";
+      yield next;
+    });
+
+    app.use(handler);
+    app.use(function *() {
+      this.status = 404;
+      this.body+= "!";
+    });
+
+    request(app.listen())
+    .get("/multi/yields")
+    .expect(404)
+    .expect("Not Found!")
+    .end(done);
+  });
+
+  it("works with other middlewares", function(done) {
+    var app = koa();
+    var a = function *(next) {
+      yield* next;
+    };
+
+    var handler = route("POST", "/posts", a, koaBody(), function *(next) {
+      this.body = this.request.body;
+    });
+
+    app.use(handler);
+
+    request(app.listen())
+    .post("/posts")
+    .send({foo: "bar"})
+    .expect(200)
+    .expect({fields: {foo: "bar"}})
     .end(done);
   });
 });

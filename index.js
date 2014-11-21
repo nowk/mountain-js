@@ -34,16 +34,19 @@ let methods = [
  * @api public
  */
 
-function route(method, pathStr, fn) {
-  if ("undefined" === typeof fn) {
-    fn = pathStr;
+function route(method, pathStr) {
+  var offset = 2;
+  if ("string" !== typeof pathStr) {
+    offset = 1;
     pathStr = method;
     method = null;
   }
 
-  if (!isGenerator(fn)) {
-    throw new Error("handler function must be a GeneratorFunction");
-  }
+  var fns = Array.prototype.slice.call(arguments, offset);
+
+  // if (!isGenerator(fn)) {
+  //   throw new Error("handler function must be a GeneratorFunction");
+  // }
 
   if (method) {
     method = method.toUpperCase();
@@ -55,11 +58,45 @@ function route(method, pathStr, fn) {
 
   return function *(next) {
     if (isMethod.call(this, method) && pathsMatch.call(this, pathStr)) {
-      return yield fn;
+      return yield* iteration.call(this, fns, next);
     }
 
     yield next;
   };
+}
+
+/**
+ * iteration returns an iterator interface that will call each function in the
+ * route stack.
+ *
+ * @param {Array} fns (array of generator functions)
+ * @param {Function} done (this the app stacks next)
+ * @return {Object}
+ * @api private
+ */
+
+function iteration(fns, done) {
+  // jshint validthis: true
+  var self = this;
+  var n = 0;
+  var it = {
+    next: function() {
+      if (fns.length === n) {
+        return {done: true};
+      }
+
+      var fn = fns[n];
+      n++;
+
+      var next = it;
+      if (fns.length === n) {
+        next = done;
+      }
+      return {done: false, value: fn.call(self, next)};
+    }
+  };
+
+  return it;
 }
 
 /**
