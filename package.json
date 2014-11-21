@@ -1,5 +1,5 @@
 {
-  "name": "mountain",
+  "name": "mountain-js",
   "version": "0.0.1",
   "description": "Simple routing for Koa",
   "main": "index.js",
