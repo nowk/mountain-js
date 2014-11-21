@@ -10,16 +10,16 @@ Simple routing for Koa
 
 ## Example
 
-    var posts = route("GET", "/posts", function *(next) {
+    let posts = route("GET", "/posts", function *(next) {
       this.body = "got posts!";
     });
 
-    var postComment = route("POST", "/posts/:id/comments", function *(next) {
-      var postId = this.params.id;
+    let postComment = route("POST", "/posts/:id/comments", function *(next) {
+      let postId = this.params.id;
       this.body = "commented on a post";
     });
 
-    var app = koa();
+    let app = koa();
     app.use(posts);
     app.use(postComment);
     app.listen();
