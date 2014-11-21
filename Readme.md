@@ -7,6 +7,9 @@
 
 Simple routing for Koa
 
+## Install
+
+    npm install mountain-js
 
 ## Example
 
