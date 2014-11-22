@@ -37,8 +37,6 @@ function route(meth, path) {
     throw new Error(meth.toUpperCase() + " method is not supported");
   }
 
-  path = parsePath(path);
-
   return function *(next) {
     if (!isMethod.call(this, meth)) {
       yield next;
@@ -82,6 +80,7 @@ function parsePath(path) {
  */
 
 function pathsMatch(path) {
+  path = parsePath(path);
   if ("string" === typeof path) {
     return path === this.path;
   }
