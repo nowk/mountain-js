@@ -37,6 +37,8 @@ function route(meth, path) {
     throw new Error(meth.toUpperCase() + " method is not supported");
   }
 
+  path = parsePath(path);
+
   return function *(next) {
     if (!isMethod.call(this, meth)) {
       yield next;
@@ -90,53 +92,70 @@ function iteration(fns, done) {
   return itr;
 }
 
+let paramPathReg = /\/?[a-z0-9-_:]+/gi;
+
+/**
+ * parsePath parses the route path and returns an array if it has param keys,
+ * else it returns the original path
+ *
+ * @param {String} path
+ * @return {Array|String}
+ * @api private
+ */
+
+function parsePath(path) {
+  if (/:[a-z0-9_]+/gi.test(path)) {
+    return path.match(paramPathReg);
+  }
+
+  return path;
+}
+
 /**
  * pathsMatch asserts the request path
  *
- * @param {String} pathPattern
+ * @param {String} path
  * @return {Bool}
  * @api private
  */
 
-function pathsMatch(pathPattern) {
-  if (/:[a-z0-9_]+/gi.test(pathPattern)) {
-    let reg = /\/?[a-z0-9-_:]+/gi;
+function pathsMatch(path) {
+  if ("string" === typeof path) {
+    return path === this.path;
+  }
 
-    let p = pathPattern.match(reg);
-    let s = this.path.match(reg);
-    if (!s || s.length < p.length) {
-      return false;
-    }
-
-    let params = parameterize.call(p, s);
-
-    try {
-      assert.deepEqual(p, s);
-      this.params = params;
-      return true;
-    } catch(e) {
-      if (!e instanceof assert.AssertionError) {
-        throw e;
-      }
-    }
-
+  let s = this.path.match(paramPathReg);
+  if (!s || s.length < path.length) {
     return false;
   }
 
-  return pathPattern === this.path;
+  let params = {};
+  applyParams.call(path, s, params);
+
+  try {
+    assert.deepEqual(path, s);
+    this.params = params;
+
+    return true;
+  } catch(e) {
+    if (!e instanceof assert.AssertionError) {
+      throw e;
+    }
+  }
+
+  return false;
 }
 
 /**
- * parameterize maps and replaces associated param values to keys
+ * applyParams maps and replaces associated param values to keys
  *
  * @param {Object} s (original url split)
- * @return {Object} (key:value of parsed param keys to value)
+ * @param {Object} params
  * @api private
  */
 
-function parameterize(s) {
+function applyParams(s, params) {
   let self = this;
-  let params = {};
   let i = 0;
   let len = this.length;
   for(; i < len; i++) {
@@ -148,8 +167,6 @@ function parameterize(s) {
       params[prop] = m.replace(/\/?/, "");
     }
   }
-
-  return params;
 }
 
 /**
@@ -164,6 +181,7 @@ function isMethod(method) {
   if (!method) {
     return true;
   }
+
   return method === this.method.toLowerCase();
 }
 
