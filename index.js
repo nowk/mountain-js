@@ -74,24 +74,29 @@ function route(method, pathStr) {
 function iteration(fns, done) {
   let self = this;
   let n = 0;
-  let it = {
+  let itr = {
     next: function() {
       if (fns.length === n) {
-        return {done: true};
+        return {
+          done: true
+        };
       }
 
       let fn = fns[n];
       n++;
 
-      let next = it;
+      let next = itr;
       if (fns.length === n) {
         next = done;
       }
-      return {done: false, value: fn.call(self, next)};
+      return {
+        done:  false, 
+        value: fn.call(self, next)
+      };
     }
   };
 
-  return it;
+  return itr;
 }
 
 /**
