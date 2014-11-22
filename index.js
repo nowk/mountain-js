@@ -16,7 +16,6 @@ module.exports = route;
  *
  * @param {String} meth (optional, defaults to GET)
  * @param {String} path
- * @param {GeneratorFunction} fn
  * @return {GeneratorFunction}
  * @api public
  */
