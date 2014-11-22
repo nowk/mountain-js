@@ -72,7 +72,6 @@ function route(method, pathStr) {
  */
 
 function iteration(fns, done) {
-  // jshint validthis: true
   let self = this;
   let n = 0;
   let it = {
@@ -104,7 +103,6 @@ function iteration(fns, done) {
  */
 
 function pathsMatch(pathPattern) {
-  /* jshint validthis: true */
   if (/:[a-z0-9_]+/gi.test(pathPattern)) {
     let reg = /\/?[a-z0-9-_:]+/gi;
 
@@ -141,7 +139,6 @@ function pathsMatch(pathPattern) {
  */
 
 function parameterize(s) {
-  /* jshint validthis: true */
   let self = this;
   let params = {};
   let i = 0;
@@ -172,7 +169,6 @@ function isMethod(method) {
     return true;
   }
 
-  /* jshint validthis: true */
   return method === this.request.method.toUpperCase();
 }
 
