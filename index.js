@@ -44,10 +44,6 @@ function route(method, pathStr) {
 
   let fns = Array.prototype.slice.call(arguments, offset);
 
-  // if (!isGenerator(fn)) {
-  //   throw new Error("handler function must be a GeneratorFunction");
-  // }
-
   if (method) {
     method = method.toUpperCase();
 
@@ -180,15 +176,3 @@ function isMethod(method) {
   return method === this.request.method.toUpperCase();
 }
 
-
-/**
- * isGenerator asserts the handler is a GeneratorFunction
- *
- * @param {GenratorFunction} fn
- * @return {Bool}
- * @api private
- */
-
-function isGenerator(fn) {
-  return /^function\s?\*\s?\(/.test(fn.toString());
-}
