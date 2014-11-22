@@ -11,21 +11,51 @@ Simple routing for Koa
 
     npm install mountain-js
 
-## Example
+## Usage
 
-    let posts = route("GET", "/posts", function *(next) {
-      this.body = "got posts!";
-    });
+    const route = require("mountain-js");
 
-    let postComment = route("POST", "/posts/:id/comments", function *(next) {
-      let postId = this.params.id;
-      this.body = "commented on a post";
-    });
+## Examples
 
     let app = koa();
-    app.use(posts);
-    app.use(postComment);
+    app.use(route("GET", "/posts", function *(next) {
+      this.body = "got posts!";
+    }));
+
     app.listen();
+
+Allow route on all methods.
+
+    app.use(route("/posts", function *(next) {
+      this.body = "always got posts!";
+    }));
+
+Param'd URLs.
+
+    app.use(route("GET", "/posts/:id", function *(next) {
+      this.body = "got post #" + this.params.id;
+    }));
+
+More middlewares.
+
+    let myMiddleware = function *(next) {
+      yield next;
+    }
+
+    app.use(route("POST", "/posts", myMiddleware, koaBody(), function *(next) {
+      this.body = "posted to posts";
+    }));
+
+Jump back out to the app from the routed middlewares
+
+    app.use(route("GET", "/posts", function *(next) {
+      this.body = "posted to posts";
+      yield next;
+    }));
+
+    app.use(function *(next) {
+      // hello!
+    });
 
 ## License
 
