@@ -2,7 +2,9 @@
 "use strict";
 
 const assert = require("assert");
-const methods = require("methods");
+const methods = require("methods").map(function(m) {
+  return m.toUpperCase();
+});
 const compose = require("koa-compose");
 
 /**
@@ -30,11 +32,11 @@ function route(meth, path) {
   let fns = compose(Array.prototype.slice.call(arguments, i));
 
   if (meth) {
-    meth = meth.toLowerCase();
+    meth = meth.toUpperCase();
   }
 
   if (meth && !~methods.indexOf(meth)) {
-    throw new Error(meth.toUpperCase() + " method is not supported");
+    throw new Error(meth + " method is not supported");
   }
 
   return function *(next) {
@@ -143,6 +145,6 @@ function isMethod(method) {
     return true;
   }
 
-  return method === this.method.toLowerCase();
+  return method === this.method.toUpperCase();
 }
 
