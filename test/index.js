@@ -159,7 +159,7 @@ describe("route", function() {
     let app = koa();
     let a = function *(next) {
       this.body = "Not ";
-      yield* next;
+      yield next;
     };
 
     let handler = route("/multi/yields", a, function *(next) {
@@ -183,7 +183,7 @@ describe("route", function() {
   it("works with other middlewares", function(done) {
     let app = koa();
     let a = function *(next) {
-      yield* next;
+      yield next;
     };
 
     let handler = route("POST", "/posts", a, koaBody(), function *(next) {
@@ -197,6 +197,27 @@ describe("route", function() {
     .send({foo: "bar"})
     .expect(200)
     .expect({fields: {foo: "bar"}})
+    .end(done);
+  });
+
+  it("can end within an middleware", function(done) {
+    let app = koa();
+    let a = function *(next) {
+      this.status = 500;
+      this.body = "not another step!";
+    };
+
+    let handler = route("GET", "/posts", a, function *(next) {
+      this.status = 200;
+      this.body = "hello world!";
+    });
+
+    app.use(handler);
+
+    request(app.listen())
+    .get("/posts")
+    .expect(500)
+    .expect("not another step!")
     .end(done);
   });
 });

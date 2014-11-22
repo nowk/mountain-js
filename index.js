@@ -3,6 +3,7 @@
 
 const assert = require("assert");
 const methods = require("methods");
+const compose = require("koa-compose");
 
 /**
  * expose
@@ -27,7 +28,7 @@ function route(meth, path) {
     path = meth;
     meth = null;
   }
-  let fns = Array.prototype.slice.call(arguments, i);
+  let fns = compose(Array.prototype.slice.call(arguments, i));
 
   if (meth) {
     meth = meth.toLowerCase();
@@ -46,50 +47,12 @@ function route(meth, path) {
     }
 
     if (pathsMatch.call(this, path)) {
-      yield* iteration.call(this, fns, next);
+      yield fns.call(this, next);
       return;
     }
 
     yield next;
   };
-}
-
-/**
- * iteration returns an iterator interface that will call each function in the
- * route stack.
- *
- * @param {Array} fns (array of generator functions)
- * @param {Function} done (this the app stacks next)
- * @return {Object}
- * @api private
- */
-
-function iteration(fns, done) {
-  let self = this;
-  let n = 0;
-  let itr = {
-    next: function() {
-      if (fns.length === n) {
-        return {
-          done: true
-        };
-      }
-
-      let fn = fns[n];
-      n++;
-
-      let next = itr;
-      if (fns.length === n) {
-        next = done;
-      }
-      return {
-        done:  false, 
-        value: fn.call(self, next)
-      };
-    }
-  };
-
-  return itr;
 }
 
 let paramPathReg = /\/?[a-z0-9-_:]+/gi;
