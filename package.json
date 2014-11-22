@@ -28,5 +28,8 @@
     "koa-better-body": "^1.0.7",
     "mocha": "^2.0.1",
     "supertest": "^0.15.0"
+  },
+  "dependencies": {
+    "methods": "^1.1.0"
   }
 }

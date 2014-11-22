@@ -2,6 +2,7 @@
 "use strict";
 
 const assert = require("assert");
+const methods = require("methods");
 
 /**
  * expose
@@ -10,51 +11,41 @@ const assert = require("assert");
 module.exports = route;
 
 /**
- * methods
- */
-
-let methods = [
-  "GET",
-  "POST",
-  "PUT",
-  "HEAD",
-  "DELETE",
-  "OPTIONS",
-  "TRACE",
-  "PATCH"
-];
-
-/**
  * route routes a handler fn to a method and path
  *
- * @param {String} method (optional, defaults to GET)
- * @param {String} pathStr
+ * @param {String} meth (optional, defaults to GET)
+ * @param {String} path
  * @param {GeneratorFunction} fn
  * @return {GeneratorFunction}
  * @api public
  */
 
-function route(method, pathStr) {
-  let offset = 2;
-  if ("string" !== typeof pathStr) {
-    offset = 1;
-    pathStr = method;
-    method = null;
+function route(meth, path) {
+  let i = 2;
+  if ("string" !== typeof path) {
+    i = 1;
+    path = meth;
+    meth = null;
+  }
+  let fns = Array.prototype.slice.call(arguments, i);
+
+  if (meth) {
+    meth = meth.toLowerCase();
   }
 
-  let fns = Array.prototype.slice.call(arguments, offset);
-
-  if (method) {
-    method = method.toUpperCase();
-
-    if (!~methods.indexOf(method)) {
-      throw new Error(method + " method is not supported");
-    }
+  if (meth && !~methods.indexOf(meth)) {
+    throw new Error(meth.toUpperCase() + " method is not supported");
   }
 
   return function *(next) {
-    if (isMethod.call(this, method) && pathsMatch.call(this, pathStr)) {
-      return yield* iteration.call(this, fns, next);
+    if (!isMethod.call(this, meth)) {
+      yield next;
+      return;
+    }
+
+    if (pathsMatch.call(this, path)) {
+      yield* iteration.call(this, fns, next);
+      return;
     }
 
     yield next;
@@ -173,7 +164,6 @@ function isMethod(method) {
   if (!method) {
     return true;
   }
-
-  return method === this.request.method.toUpperCase();
+  return method === this.method.toLowerCase();
 }
 
